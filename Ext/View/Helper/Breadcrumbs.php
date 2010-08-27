@@ -1,10 +1,28 @@
 <?php
 
+/**
+ * @category   Ext
+ * @package    Ext_View
+ * @subpackage Helper
+ * @author     Mokevnin Kirill <mokevnin@gmail.com>
+ * @license    New BSD License
+ */
+
+/**
+ * Helper for making easy breadcrumbs
+ */
 class Ext_View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
 {
     private $_items = array();
     private $_separator = ' / ';
-    
+
+    /**
+     *
+     * @param string $title
+     * @param string $route
+     * @param array $params
+     * @return Ext_View_Helper_Breadcrumbs
+     */
     public function breadcrumbs($title = null, $route = null, array $params = array())
     {
         if (is_null($title)) {
@@ -39,6 +57,10 @@ class Ext_View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
         return $this->render();
     }
 
+    /**
+     *
+     * @param string $separator
+     */
     public function setSeparator($separator)
     {
         $this->_separator = $separator;
