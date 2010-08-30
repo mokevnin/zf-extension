@@ -25,3 +25,17 @@ application.ini
 
     pluginPaths.Ext_Application_Resource = BASE_PATH "/library/Ext/Application/Resource"
     resources.exceptionizer.params.mask = E_ALL
+
+#### Ext_Controller_Action_Helper_Di
+
+application.ini
+
+    resources.frontcontroller.actionhelperpaths.Ext_Controller_Action_Helper_ = BASE_PATH "/library/Ext/Controller/Action/Helper"
+
+action
+
+    /**
+     * @var
+     * @inject cachemanager
+    /*
+    public $cachemanager
