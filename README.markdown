@@ -16,3 +16,12 @@ action
 layout
 
     <?= $this->breadcrumbs()->render() ?>
+
+#### Ext_Application_Resource_Exceptionizer
+
+see [PHP_Exceptionizer](http://dklab.ru/lib/PHP_Exceptionizer/)
+
+application.ini
+
+    pluginPaths.Ext_Application_Resource = BASE_PATH "/library/Ext/Application/Resource"
+    resources.exceptionizer.params.mask = E_ALL
