@@ -28,11 +28,13 @@ application.ini
 
 #### Ext_Controller_Action_Helper_Di
 
+see [Inversion of Control Containers and the Dependency Injection pattern](http://martinfowler.com/articles/injection.html)
+
 application.ini
 
     resources.frontcontroller.actionhelperpaths.Ext_Controller_Action_Helper_ = BASE_PATH "/library/Ext/Controller/Action/Helper"
 
-action
+controller
 
     /**
      * @var
