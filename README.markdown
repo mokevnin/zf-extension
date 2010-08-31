@@ -34,6 +34,11 @@ application.ini
 
     resources.frontcontroller.actionhelperpaths.Ext_Controller_Action_Helper_ = BASE_PATH "/library/Ext/Controller/Action/Helper"
 
+Example
+
+    resources.cachemanager.database.backend.name = Memcached
+    ...
+
 controller
 
     /**
@@ -41,3 +46,11 @@ controller
      * @inject cachemanager
     /*
     public $cachemanager
+
+#### Ext_View_Helper_IsActive
+
+view
+
+    <a href="<link>" <?php if ($this->isActive('module:controller:action', 'module:controller', 'module') ?>class="active"<? endif ?>>anhor</a>
+
+module - required, controller and action - optional
