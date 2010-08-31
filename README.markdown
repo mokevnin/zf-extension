@@ -2,20 +2,30 @@
 
 ### View helpers
 
-#### Ext_View_Helper_Breadcrumbs
-
 application.ini
 
     resources.view.helperPath.Ext_View_Helper_ = BASE_PATH "/library/Ext/View/Helper"
+
+#### Ext_View_Helper_Breadcrumbs
 
 action
 
     $this->view->breadcrumbs('Main page');
     $this->view->breadcrumbs('About', 'about', array('uri' => 'about.html'));
 
-layout
+view or layout
 
     <?= $this->breadcrumbs()->render() ?>
+
+#### Ext_View_Helper_IsActive
+
+view or layout
+
+    <a href="<link>" <?php if ($this->isActive('module:controller:action', 'module:controller', 'module') ?>class="active"<? endif ?>>anhor</a>
+
+module - required, controller and action - optional
+
+### Application resources
 
 #### Ext_Application_Resource_Exceptionizer
 
@@ -25,6 +35,8 @@ application.ini
 
     pluginPaths.Ext_Application_Resource = BASE_PATH "/library/Ext/Application/Resource"
     resources.exceptionizer.params.mask = E_ALL
+
+### Controller Helpers
 
 #### Ext_Controller_Action_Helper_Di
 
@@ -46,11 +58,3 @@ controller
      * @inject cachemanager
     /*
     public $cachemanager
-
-#### Ext_View_Helper_IsActive
-
-view
-
-    <a href="<link>" <?php if ($this->isActive('module:controller:action', 'module:controller', 'module') ?>class="active"<? endif ?>>anhor</a>
-
-module - required, controller and action - optional
