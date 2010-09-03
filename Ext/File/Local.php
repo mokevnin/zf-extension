@@ -5,7 +5,7 @@
 class Ext_File_Local implements Ext_File_Interface
 {
     protected $_currentDir;
-
+    
     public function isDir($pathname)
     {
         return is_dir($this->_getFullPath($pathname));
@@ -18,6 +18,7 @@ class Ext_File_Local implements Ext_File_Interface
         if (!$result) {
             throw new Ext_File_Exception("'$full_path' does not writable");
         }
+        
         return true;
     }
 
@@ -25,7 +26,7 @@ class Ext_File_Local implements Ext_File_Interface
     {
         return is_writable($this->_getFullPath($pathname));
     }
-
+    
     public function rename($src, $dest)
     {
         return rename($this->_getFullPath($src), $this->_getFullPath($dest));
@@ -39,6 +40,11 @@ class Ext_File_Local implements Ext_File_Interface
     public function create($src, $dest)
     {
         return $this->rename($this->_getFullPath($src), $this->_getFullPath($dest));
+    }
+
+    public function delete($filepath)
+    {
+        return unlink($filepath);
     }
 
     public function setCurrentDir($pathname)

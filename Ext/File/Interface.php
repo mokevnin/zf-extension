@@ -7,12 +7,6 @@ interface Ext_File_Interface
 {
     public function isDir($pathname);
 
-    /**
-     * Что может означать mode в контексте webdav?
-     * При включенной опции nginx create_full_put_path, recursive не имеет смысла, но разработчик
-     * сам должен это учитывать
-     *
-     */
     public function mkdir($path, $mode = 0777, $recursive = false);
 
     /**
@@ -32,4 +26,6 @@ interface Ext_File_Interface
      * 
      */
     public function create($src, $dest);
+
+    public function delete($filepath);
 }

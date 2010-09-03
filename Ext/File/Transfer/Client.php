@@ -59,7 +59,7 @@ class Ext_File_Transfer_Client
         }
         return true;
     }
-
+    
     public function create($files = null)
     {
         if (!$this->isValid($files)) {
@@ -110,7 +110,7 @@ class Ext_File_Transfer_Client
             }
         }
 
-
+        
         return sizeof($check) ? $check : $this->_files;
     }
 

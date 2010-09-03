@@ -50,8 +50,7 @@ class Ext_File_Transfer_File extends Ext_File
     public function getDestination()
     {
         if (!$this->_destination) {
-            $file_path = dirname($this->_options['tmp_name']) . '/' . $this->_options['name'];
-            $this->setDestination($file_path);
+            throw new Ext_File_Transfer_Exception('Destination is not set');
         } else if ('/' == substr($this->_destination, -1, 1)) {
             $this->setDestination($this->_destination . $this->_options['name']);
         }
