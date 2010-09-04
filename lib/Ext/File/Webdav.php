@@ -8,17 +8,15 @@ class Ext_File_Webdav implements Ext_File_Interface
      */
     protected $_client;
 
-    public function setClient(Ext_Webdav_Client $client)
+    public function  __construct(Ext_Webdav_Client $client)
     {
         $this->_client = $client;
-
-        return $this;
     }
 
     public function getClient()
     {
         if (!$this->_client) {
-            throw new Exception('Webdav client is not set');
+            throw new Ext_File_Exception('Webdav client is not set');
         }
         return $this->_client;
     }
@@ -87,8 +85,6 @@ class Ext_File_Webdav implements Ext_File_Interface
     
     public function create($src, $dest)
     {
-        $file_path = ($src instanceof Ext_File) ? $src->getFilePath() : $src;
-
         $this->_client->setHeaders('Content-Type', 'application/octet-stream');
         $this->_client->setHeaders('Accept-encoding', 'identity');
         $this->_client->setUri($dest);

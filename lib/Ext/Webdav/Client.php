@@ -7,7 +7,7 @@ class Ext_Webdav_Client extends Zend_Http_Client
     const MOVE     = 'MOVE';
     const PROPFIND = 'PROPFIND';
 
-    public function  __construct($config)
+    public function  __construct(array $config)
     {
         parent::__construct(null, $config);
         $this->setHeaders('host', $this->config['client']['host']);

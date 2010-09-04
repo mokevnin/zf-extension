@@ -2,14 +2,8 @@
 /**
  * Работает с файлс
  */
-class Ext_File_Transfer_Client
+class Ext_File_Transfer_Client extends Ext_File_Transfer_Abstract
 {
-    /**
-     *
-     * @var Ext_File_Interface
-     */
-    protected $_fsAccess;
-
     /**
      *
      * @var array
@@ -18,8 +12,16 @@ class Ext_File_Transfer_Client
 
     public function __construct(Ext_File_Interface $fsAccess)
     {
+        parent::__construct($fsAccess);
+
         $this->_fsAccess = $fsAccess;
         $this->_prepareFiles();
+        $this->addValidator('Upload', false, $this->_files);
+    }
+
+    public function addValidator($validator, $breakChainOnFailure = false, $options = null, $files = null)
+    {
+
     }
 
     /**
@@ -29,56 +31,6 @@ class Ext_File_Transfer_Client
     public function getFsAccess()
     {
         return $this->_fsAccess;
-    }
-
-    public function setDestination($filePath)
-    {
-        foreach ($this->getFiles() as $file) {
-            $file->setDestination($filePath);
-        }
-    }
-
-    public function isValid($files = null)
-    {
-        $check = $this->getFiles($files);
-        foreach ($check as $file) {
-            if (!$file->isValid()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public function isUploaded($files = null)
-    {
-        $check = $this->getFiles($files);
-        foreach ($check as $file) {
-            if (!$file->isUploaded()) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    public function create($files = null)
-    {
-        if (!$this->isValid($files)) {
-            return false;
-        }
-
-        if (!$this->isUploaded($files)) {
-            return false;
-        }
-
-        $files = $this->getFiles($files);
-        foreach ($files as $file) {
-            $result = $this->_fsAccess->create($file->getFilePath(), $file->getDestination());
-            if (!$result) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -101,7 +53,7 @@ class Ext_File_Transfer_Client
         if (sizeof($files)) {
             foreach ($files as $file) {
                 if ($file instanceof Ext_File_Transfer_File) {
-                    $file = $file->getFormName();
+                    $file = $file->getFileId();
                 }
                 if ($file && !array_key_exists($file, $this->_files)) {
                     throw new Ext_File_Transfer_Exception("File '$file' does not exist");
@@ -110,7 +62,6 @@ class Ext_File_Transfer_Client
             }
         }
 
-        
         return sizeof($check) ? $check : $this->_files;
     }
 
@@ -121,7 +72,11 @@ class Ext_File_Transfer_Client
         }
 
         foreach ($_FILES as $form => $options) {
-            $this->_files[$form] = new Ext_File_Transfer_File($form, $options);
+            if (!is_array($options['name'])) {
+                $this->_files[$form] = new Ext_File_Transfer_File($form, $options);
+            } else {
+                //TODO
+            }
         }
     }
 }
