@@ -1,6 +1,6 @@
 <?php
 
-class Ext_File_Transfer_File extends Ext_File_Transfer_File_Abstract
+class Ext_File_Transfer_File_HttpPost extends Ext_File_Transfer_File_Abstract
 {
     protected $_options = array();
     protected $_formName;
@@ -8,9 +8,9 @@ class Ext_File_Transfer_File extends Ext_File_Transfer_File_Abstract
 
     public function  __construct($formName, array $options)
     {
+        $this->_formName = $formName;
         $this->setOptions($options);
         parent::__construct($options['tmp_name']);
-        $this->_formName = $formName;
     }
 
     public function setOptions(array $options)
@@ -18,7 +18,7 @@ class Ext_File_Transfer_File extends Ext_File_Transfer_File_Abstract
         if (!array_key_exists('error', $options)
           || !array_key_exists('tmp_name', $options)
           || !array_key_exists('name', $options)) {
-            throw new Exception('Options does not valid');
+            throw new Ext_File_Transfer_File_Exception('Options does not valid');
         }
         $this->_options = $options;
 
@@ -28,5 +28,15 @@ class Ext_File_Transfer_File extends Ext_File_Transfer_File_Abstract
     public function getFileId()
     {
         return $this->_formName;
+    }
+
+    public function setDestination($dest, $newFileName = null)
+    {
+        $new_file_name = $newFileName;
+        if (!$new_file_name) {
+            $new_file_name = $this->_options['name'];
+        }
+
+        return parent::setDestination($dest, $new_file_name);
     }
 }

@@ -16,21 +16,22 @@ abstract class Ext_File_Transfer_File_Abstract extends Ext_File
 
     public function setDestination($dest, $newFileName = null)
     {
+        $this->_destination = $dest;
         $this->_newFileName = $newFileName;
-        $this->_destination = $destionation;
 
         return $this;
     }
 
     public function getDestination()
     {
-        if (!$this->_destination) {
-            throw new Ext_File_Transfer_Exception('Destination is not set');
-        } else if ('/' == substr($this->_destination, -1, 1)) {
-            $this->setDestination($this->_destination . $this->_options['name']);
+        $destionation = $this->_destination;
+        if (!$destionation) {
+            throw new Ext_File_Transfer_File_Exception('Destination is not set');
+        } else if ($this->_newFileName) {
+            $destionation = rtrim($destination, '/') . '/' . $this->_newFileName;
         }
 
-        return $this->_destination;
+        return $destionation;
     }
 
     public function addValidator(Zend_Validate_Interface $validator, $breakChainOnFailure = false, $options = null, $files = null)
@@ -52,18 +53,13 @@ abstract class Ext_File_Transfer_File_Abstract extends Ext_File
         //TODO
     }
 
-    public function isFiltered()
-    {
-        return $this->_filtered;
-    }
-
     /**
      * @todo
      */
     public function filter()
     {
-        if ($this->_transfered) {
-            throw new Ext_File_Exception('File already transfered');
+        if ($this->_filtered) {
+            return true;
         }
         foreach ($this->_filters as $name => $filter) {
             if ($name == 'Rename') {

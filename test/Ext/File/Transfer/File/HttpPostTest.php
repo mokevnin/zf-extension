@@ -1,6 +1,6 @@
 <?php
 
-class Ext_File_Transfer_FileTest extends PHPUnit_Framework_TestCase
+class Ext_File_Transfer_File_HttpPostTest extends PHPUnit_Framework_TestCase
 {
     /**
      *
@@ -17,11 +17,16 @@ class Ext_File_Transfer_FileTest extends PHPUnit_Framework_TestCase
             'error' => 0,
             'name' => 'source_name'
         );
-        $this->transferFile = new Ext_File_Transfer_File($this->formName, $this->config);
+        $this->transferFile = new Ext_File_Transfer_File_HttpPost($this->formName, $this->config);
     }
 
-    public function testGetFsAccess()
+    public function testGetFileId()
     {
         $this->assertEquals($this->formName, $this->transferFile->getFileId());
+    }
+
+    public function testSetDestination()
+    {
+        
     }
 }

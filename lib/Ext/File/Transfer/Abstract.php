@@ -25,19 +25,16 @@ class Ext_File_Transfer_Abstract
             return false;
         }
 
-        $files = $this->getFiles($files);
-        foreach ($files as $file) {
+        $selected = $this->getFiles($files);
+        foreach ($selected as $file) {
             if ($file->isTransfered()) {
                 continue;
             }
-            if (!$file->isFiltered()) {
-                $file->filter();
-            }
-            $result = $this->_fsAccess->create($file->getFilePath(), $file->getDestination());
-            $file->setTransfered();
-            if (!$result) {
+            $file->filter();
+            if (!$this->_fsAccess->create($file->getFilePath(), $file->getDestination())) {
                 return false;
             }
+            $file->setTransfered();
         }
 
         return true;
@@ -57,12 +54,59 @@ class Ext_File_Transfer_Abstract
 
     public function isValid($files = null)
     {
-        $check = $this->getFiles($files);
-        foreach ($check as $file) {
+        $selected = $this->getFiles($files);
+        foreach ($selected as $file) {
             if (!$file->isValid()) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     *
+     * @return Ext_File_Interface
+     */
+    public function getFsAccess()
+    {
+        return $this->_fsAccess;
+    }
+
+    /**
+     *
+     * @param string $file
+     * @return Ext_File_Transfer_File
+     */
+    public function getFile($file)
+    {
+        return current($this->getFiles($file));
+    }
+
+    public function getFiles($files = null)
+    {
+        if (is_string($files)) {
+            $files = array($files);
+        }
+
+        $selected = array();
+        $check = sizeof($files) ? $files : array_keys($this->_files);
+        foreach ($check as $file) {
+            if ($file instanceof Ext_File_Transfer_File) {
+                $file = $file->getFileId();
+            }
+            if ($file && !array_key_exists($file, $this->_files)) {
+                throw new Ext_File_Transfer_Exception("File '$file' does not exist");
+            }
+            if (is_array($this->_files[$file])) {
+                if (sizeof($files) == 1) {
+                    return $this->_files[$file];
+                } else {
+                    continue;
+                }
+            }
+            $selected[$file] = $this->_files[$file];
+            }
+
+        return $selected;
     }
 }
