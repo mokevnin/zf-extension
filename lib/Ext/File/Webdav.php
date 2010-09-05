@@ -21,7 +21,7 @@ class Ext_File_Webdav implements Ext_File_Interface
         return $this->_client;
     }
 
-    public function mkDir($path, $mode = 0777, $recursive = false)
+    public function mkdir($path, $recursive = true);
     {
         if (!$recursive) {
             $this->_client->setUri($path);

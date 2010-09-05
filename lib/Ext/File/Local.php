@@ -11,7 +11,7 @@ class Ext_File_Local implements Ext_File_Interface
         return is_dir($this->_getFullPath($pathname));
     }
 
-    public function mkDir($pathname, $mode = 0777, $recursive = false)
+    public function mkdir($path, $recursive = true);
     {
         $full_path = $this->_getFullPath($pathname);
         $result = @mkdir($full_path, $mode, $recursive);
