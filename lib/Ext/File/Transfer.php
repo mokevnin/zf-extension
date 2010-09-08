@@ -1,6 +1,6 @@
 <?php
 
-abstract class Ext_File_Transfer
+class Ext_File_Transfer
 {
     /**
      *
@@ -10,8 +10,8 @@ abstract class Ext_File_Transfer
 
     public function __construct(Ext_File_Transfer_Adapter_Interface $adapter)
     {
-        $this->_receiver = $receiver;
-        $this->_prepareFiles(); //TODO move to ext_file_httpset
+        $this->_adapter = $adapter;
+        $this->_prepareFiles();
         //$this->addValidator('Upload', false, $this->_files);
     }
 
@@ -42,12 +42,16 @@ abstract class Ext_File_Transfer
         }
 
         $selected = $this->getFiles($files);
+        $results = array();
         foreach ($selected as $file) {
             $file->filter();
-            $this->_doTransfer($file);
+            if ($file->isTransfered()) {
+                continue;
+            }
+            $result[$file->getFormName()] = $this->_doTransfer($file);
         }
 
-        return true;
+        return $result;
     }
 
     public function _doTransfer(Ext_File_File $file)
@@ -65,7 +69,7 @@ abstract class Ext_File_Transfer
         $check = sizeof($files) ? $files : array_keys($this->_files);
         foreach ($check as $file) {
             if ($file instanceof Ext_File_Transfer_File) {
-                $file = $file->getFileId();
+                $file = $file->getFormName();
             }
             if ($file && !array_key_exists($file, $this->_files)) {
                 throw new Ext_File_Transfer_Exception("File '$file' does not exist");
@@ -96,7 +100,7 @@ abstract class Ext_File_Transfer
 
         foreach ($_FILES as $form_name => $options) {
             if (!is_array($options['name'])) {
-                $this->_files[$form_name] = new Ext_File_File($form_name, $options);
+                $this->_files[$form_name] = new Ext_File_Transfer_File($form_name, $options);
             } else {
                 $files = array();
                 foreach ($options as $option_name => $values) {
@@ -106,7 +110,7 @@ abstract class Ext_File_Transfer
                     }
                 }
                 foreach ($files as $new_form_name => $options) {
-                    $file = new Ext_File_File($form_name, $options);
+                    $file = new Ext_File_Transfer_File($form_name, $options);
                     $this->_files[$new_form_name] = $file;
                     $this->_files[$form_name][$new_form_name] = $file;
                 }
