@@ -1,6 +1,6 @@
 <?php
 
-class Ext_File_File
+class Ext_File_Transfer_File
 {
     protected $_options = array();
     protected $_formName;
@@ -40,6 +40,11 @@ class Ext_File_File
         return $this->_options['tmp_name'];
     }
 
+    public function getFormName()
+    {
+        return $this->_formName;
+    }
+
     public function setOptions(array $options)
     {
         if (!array_key_exists('error', $options)
@@ -64,6 +69,7 @@ class Ext_File_File
         }
 
         //TODO
+        return true;
     }
 
     public function addFilter(Zend_Filter_Interface $filter)

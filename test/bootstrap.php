@@ -9,3 +9,8 @@ function autoload($class)
     $class_name = implode('/', explode('_', $class)) . '.php';
     include $class_name;
 }
+
+function dumper($var)
+{
+    print_r($var); exit();
+}

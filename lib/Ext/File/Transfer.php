@@ -7,6 +7,8 @@ class Ext_File_Transfer
      * @var Ext_File_Transfer_Adapter_Interface
      */
     protected $_adapter;
+    
+    protected $_files = array();
 
     public function __construct(Ext_File_Transfer_Adapter_Interface $adapter)
     {
@@ -38,7 +40,7 @@ class Ext_File_Transfer
     public function transfer($files = null)
     {
         if (!$this->isValid($files)) {
-            return false;
+            return array();
         }
 
         $selected = $this->getFiles($files);
@@ -54,7 +56,7 @@ class Ext_File_Transfer
         return $result;
     }
 
-    public function _doTransfer(Ext_File_File $file)
+    public function _doTransfer(Ext_File_Transfer_File $file)
     {
         return $this->getAdapter()->upload($file);
     }

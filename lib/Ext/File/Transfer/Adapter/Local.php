@@ -2,7 +2,7 @@
 
 class Ext_File_Transfer_Adapter_Local extends Ext_File_Transfer_Adapter_Abstract
 {
-     protected $_resultObjectClass = 'Ext_File_Transfer_Adapter_Result_Local';
+    protected $_resultObjectClass = 'Ext_File_Transfer_Adapter_Result_Local';
 
     public function upload(Ext_File_Transfer_File $file)
     {
