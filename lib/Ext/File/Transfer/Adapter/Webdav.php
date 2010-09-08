@@ -1,10 +1,10 @@
 <?php
 
-class Ext_File_Transfer_Webdav implements Ext_File_Transfer_Interface
+class Ext_File_Transfer_Adapter_Webdav implements Ext_File_Transfer_Adapter_Interface
 {
     protected $_client;
 
-    public function upload(Ext_File $file)
+    public function upload(Ext_File_File $file)
     {
         $this->_client->setHeaders('Content-Type', 'application/octet-stream');
         $this->_client->setHeaders('Accept-encoding', 'identity');
@@ -12,7 +12,13 @@ class Ext_File_Transfer_Webdav implements Ext_File_Transfer_Interface
 
         $response = $this->_client->request(Zend_Http_Client::PUT);
 
-        return $response->getStatus();
+        $success = $response->getStatus() == 201 ? true : false;
+        $result = array(
+            'success' => $success,
+            'status' => $response->getStatus()
+        );
+        
+        return $result;
     }
 
     public function setUri($uri)

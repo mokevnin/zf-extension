@@ -1,6 +1,6 @@
 <?php
 
-class Ext_File
+class Ext_File_File
 {
     protected $_options = array();
     protected $_formName;
@@ -9,13 +9,30 @@ class Ext_File
     protected $_filters = array();
 
     protected $_filtered = false;
-    protected $_transfered = false;
     protected $_validated = false;
+    protected $_result = array();
+    protected $_transfered = false;
 
     public function  __construct($formName, array $options)
     {
         $this->_formName = $formName;
         $this->setOptions($options);
+    }
+
+    public function setResult(array $resultOptions)
+    {
+        $this->_result = $resultOptions;
+        $this->_transfered = true;
+    }
+
+    public function getResult()
+    {
+        return $this->_result;
+    }
+
+    public function isTransfered()
+    {
+        return $this->_transfered;
     }
 
     public function getFilePath()
@@ -54,33 +71,14 @@ class Ext_File
         //TODO
     }
 
-    /**
-     * @todo
-     */
     public function filter()
     {
         if ($this->_filtered) {
             return true;
         }
         foreach ($this->_filters as $name => $filter) {
-            if ($name == 'Rename') {
-                $this->_newFileName = $filter->getNewName();
-            } else {
-                $filter->filter();
-            }
+            $filter->filter($this->getFilePath());
         }
         $this->_filtered = true;
-    }
-
-    public function setTransfered()
-    {
-        $this->_transfered = true;
-
-        return $this;
-    }
-
-    public function isTransfered()
-    {
-        return $this->_transfered;
     }
 }
