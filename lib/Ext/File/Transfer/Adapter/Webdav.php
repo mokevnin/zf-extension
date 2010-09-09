@@ -1,6 +1,6 @@
 <?php
 
-class Ext_File_Transfer_Adapter_Webdav implements Ext_File_Transfer_Adapter_Abstract
+class Ext_File_Transfer_Adapter_Webdav extends Ext_File_Transfer_Adapter_Abstract
 {
     protected $_client;
 
@@ -10,7 +10,7 @@ class Ext_File_Transfer_Adapter_Webdav implements Ext_File_Transfer_Adapter_Abst
         $this->_client->setHeaders('Accept-encoding', 'identity');
         $this->_client->setRawData(file_get_contents($file->getFilePath()));
 
-        return $this->_client->request(Zend_Http_Client::PUT);
+        $response = $this->_client->request(Zend_Http_Client::PUT);
 
         $result = $this->getResultObject();
         $result->setSuccess($response->getStatus() == 201 ? true : false);
@@ -32,6 +32,6 @@ class Ext_File_Transfer_Adapter_Webdav implements Ext_File_Transfer_Adapter_Abst
 
     public function getClient()
     {
-        return $client;
+        return $this->_client;
     }
 }

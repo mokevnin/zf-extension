@@ -15,7 +15,7 @@ class Ext_File_Transfer_File
     
     protected $_transfered = false;
 
-    public function  __construct($formName, array $options)
+    public function  __construct($formName, array $options = array())
     {
         $this->_formName = $formName;
         $this->setOptions($options);
@@ -43,11 +43,6 @@ class Ext_File_Transfer_File
 
     public function setOptions(array $options)
     {
-        if (!array_key_exists('error', $options)
-          || !array_key_exists('tmp_name', $options)
-          || !array_key_exists('name', $options)) {
-            throw new Ext_File_Transfer_File_Exception('Options does not valid');
-        }
         $this->_options = $options;
 
         return $this;

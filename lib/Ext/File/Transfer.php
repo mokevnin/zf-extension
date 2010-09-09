@@ -100,7 +100,8 @@ class Ext_File_Transfer
                 $file = $file->getFormName();
             }
             if ($file && !array_key_exists($file, $this->_files)) {
-                throw new Ext_File_Transfer_Exception("File '$file' does not exist");
+                $this->_files[$file] = new Ext_File_Transfer_File($file);
+                //throw new Ext_File_Transfer_Exception("File '$file' does not exist");
             }
             if (is_array($this->_files[$file])) {
                 if (sizeof($files) == 1) {
@@ -110,7 +111,7 @@ class Ext_File_Transfer
                 }
             }
             $selected[$file] = $this->_files[$file];
-            }
+        }
 
         return $selected;
     }
