@@ -14,7 +14,7 @@ class Ext_File_Transfer
     {
         $this->_adapter = $adapter;
         $this->_prepareFiles();
-        //$this->addValidator('Upload', false, $this->_files);
+        $this->addValidator(new Zend_Validate_File_Upload(), false);
     }
 
     public function isValid($files = null)
@@ -26,6 +26,32 @@ class Ext_File_Transfer
             }
         }
         return true;
+    }
+
+    public function addValidator(Zend_Validate_Interface $validator, $breakChainOnFailure = false, $files = array())
+    {
+        $selected = $this->getFiles($files);
+        foreach ($selected as $file) {
+            $file->addValidator($validator, $breakChainOnFailure);
+        }
+    }
+
+    public function removeValidator($className, $files = array())
+    {
+        $selected = $this->getFiles($files);
+        foreach ($selected as $file) {
+            $file->removeValidator($className);
+        }
+
+        return $this;
+    }
+
+    public function addFilter(Zend_Filter_Interface $filter, $files = array())
+    {
+        $selected = $this->getFiles($files);
+        foreach ($selected as $file) {
+            $file->addFilter($filter);
+        }
     }
 
     /**
@@ -40,7 +66,7 @@ class Ext_File_Transfer
     public function transfer($files = null)
     {
         if (!$this->isValid($files)) {
-            return array();
+            return false;
         }
 
         $selected = $this->getFiles($files);

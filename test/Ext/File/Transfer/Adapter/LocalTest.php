@@ -2,11 +2,21 @@
 
 class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
 {
+    protected $_adapter;
+    protected $_transfer;
+    protected $_newFilePath = '/tmp/newfilename';
+
     public function setUp()
     {
+        $tmpfname = tempnam("/tmp", "FOO");
+
+        $handle = fopen($tmpfname, "w");
+        fwrite($handle, $this->_newFilePath);
+        fclose($handle);
+
         $_FILES = array(
             'formname' => array(
-                'tmp_name' => tempnam('/tmp', 'tmp_name'),
+                'tmp_name' => $tmpfname,
                 'name' => 'filename',
                 'error' => 0,
             )
@@ -17,15 +27,32 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
         Ext_Form_Element_File::setTransfer($this->_transfer);
     }
 
-    public function testUsage()
+    public function testUpload()
     {
-        $new_file_path = '/tmp/newfilename';
-
+        $this->_transfer->removeValidator('Zend_Validate_File_Upload');
         $element = new Ext_Form_Element_File('formname');
-        $adapter = $element->getAdapter();
-        $adapter->setDestination($new_file_path);
-        $value = $form->getValue('formname');
+        $element->addFilter(new Zend_Filter_File_UpperCase());
 
-        $this->assertEquals($new_file_path, (string) $value);
+        $adapter = $element->getAdapter();
+        $adapter->setDestination($this->_newFilePath);
+        $value = $element->getValue('formname');
+        
+        $this->assertEquals($this->_newFilePath, (string) $value);
+
+        //test filters
+        $this->assertEquals(strtoupper($this->_newFilePath), file_get_contents($value));
+    }
+
+    public function testUploadError()
+    {
+        $element = new Ext_Form_Element_File('formname');
+
+        $adapter = $element->getAdapter();
+        $adapter->setDestination($this->_newFilePath);
+        $value = $element->getValue('formname');
+
+        $this->assertEquals('fileUploadErrorAttack', current($element->getErrors()));
+        $this->assertEquals('fileUploadErrorAttack', current(array_keys($element->getMessages())));
+        $this->assertNull($value);
     }
 }
