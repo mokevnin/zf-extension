@@ -8,23 +8,27 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
      */
     private static $_transfer;
     
+    protected static $_test = false;
+
+    public static function initializeStub()
+    {
+        self::$_test = true;
+    }
+    
     public function getValue()
     {
+        if (self::$_test) {
+            $file = new Ext_File();
+            $file->setResult(Test_Object::getInstance()->addFile());
+            return $file;
+        }
+
         if (!$this->isValid(null)) {
             return null;
         }
 
-        $results = $this->getTransfer()->transfer($this->getName());
-
-        if (!$results) {
-            return null;
-        }
-
-        if (sizeof($results) == 1) {
-            return current($results);
-        }
-
-        return $results;
+        //TODO if name="files[]"?
+        return current($this->getTransfer()->transfer($this->getName()));
     }
 
     public function addFilter($filter, $options = null)
@@ -40,6 +44,10 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
             return true;
         }
 
+        if (!$this->isRequired()) {
+            $file = $this->getTransfer()->getFile($this->getName());
+            $file->setIgnoreNoFile();
+        }
         if ($this->getTransfer()->isValid($this->getName())) {
             $this->_validated = true;
             return true;
@@ -79,6 +87,7 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
 
     public static function setTransfer(Ext_File_Transfer $transfer)
     {
+        $transfer->addValidator(new Zend_Validate_File_Upload(), false);
         self::$_transfer = $transfer;
     }
 

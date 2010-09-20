@@ -1,9 +1,9 @@
 <?php
 
-class Ext_File_Transfer_File
+class Ext_File
 {
-    protected $_options = array();
-    protected $_formName;
+    protected $_params = array();
+    protected $_filePath;
 
     protected $_messages = array();
     protected $_validators = array();
@@ -14,11 +14,25 @@ class Ext_File_Transfer_File
     protected $_filtered = false;
     
     protected $_transfered = false;
+    protected $_ignoreNoFile = false;
 
-    public function  __construct($formName, array $options = array())
+    protected $_result;
+
+    public function  __construct($filePath = null, array $params = array())
     {
-        $this->_formName = $formName;
-        $this->setOptions($options);
+        $this->_filePath = $filePath;
+        $this->setParams($params);
+    }
+
+    public function setResult($result)
+    {
+        $this->_result = $result;
+        return $this;
+    }
+
+    public function getResult()
+    {
+        return $this->_result;
     }
 
     public function setTransfered($result)
@@ -33,19 +47,28 @@ class Ext_File_Transfer_File
 
     public function getFilePath()
     {
-        return $this->_options['tmp_name'];
+        return $this->_filePath;
     }
 
-    public function getFormName()
+    public function setParams(array $params)
     {
-        return $this->_formName;
-    }
-
-    public function setOptions(array $options)
-    {
-        $this->_options = $options;
+        $this->_params = $params;
 
         return $this;
+    }
+
+    public function getParams()
+    {
+        return $this->_params;
+    }
+
+    public function __get($name)
+    {
+        if (!isset($this->_params[$name])) {
+            throw new Ext_File_Exception("Param '$name' does not exist");
+        }
+
+        return $this->_params[$name];
     }
 
     public function addValidator(Zend_Validate_Interface $validator, $breakChainOnFailure = false)
@@ -73,7 +96,7 @@ class Ext_File_Transfer_File
      * @param  string|array $filter Type of filter to add
      * @param  string|array $options   Options to set for the filter
      * @param  string|array $files     Files to limit this filter to
-     * @return Zend_File_Transfer_Adapter
+     * @return Ext_File
      */
     public function addFilter(Zend_Filter_Interface $filter)
     {
@@ -94,6 +117,12 @@ class Ext_File_Transfer_File
                 $this->_messages += $validator->getMessages();
             }
 
+            //TODO move into validator
+            if ($this->ignoreNoFile() and (isset($this->_messages['fileUploadErrorNoFile']))) {
+                unset($this->_messages['fileUploadErrorNoFile']);
+                break;
+            }
+
             if (($this->_break[$class]) and (sizeof($this->_messages) > 0)) {
                 return false;
             }
@@ -105,6 +134,23 @@ class Ext_File_Transfer_File
         $this->_validated = true;
 
         return true;
+    }
+
+    public function exists()
+    {
+        return is_readable($this->getFilePath());
+    }
+
+    public function setIgnoreNoFile($ignoreNoFile = true)
+    {
+        $this->_ignoreNoFile = (bool) $ignoreNoFile;
+
+        return $this;
+    }
+
+    public function ignoreNoFile()
+    {
+        return $this->_ignoreNoFile;
     }
 
     public function filter()

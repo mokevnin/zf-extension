@@ -2,16 +2,13 @@
 
 class Ext_File_Transfer_Adapter_Local extends Ext_File_Transfer_Adapter_Abstract
 {
-    protected $_resultObjectClass = 'Ext_File_Transfer_Adapter_Result_Local';
-
-    public function upload(Ext_File_Transfer_File $file)
+    public function upload($filepath)
     {
-        $success = rename($file->getFilePath(), $this->getDestination());
-        $result = $this->getResultObject();
-        $result->setSuccess($success);
-        $result->setFilePath($this->getDestination());
+        if (!rename($filepath, $this->getDestination())) {
+            throw new Ext_File_Transfer_Adapter_Exception("Can't move file to '{$this->getDesination()}'");
+        }
 
-        return $result;
+        return $this->getDestination();
     }
 
     public function setDestination($filepath)

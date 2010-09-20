@@ -4,20 +4,31 @@ class Ext_File_Transfer_Adapter_Webdav extends Ext_File_Transfer_Adapter_Abstrac
 {
     protected $_client;
 
-    public function upload(Ext_File_Transfer_File $file)
+    public function upload($filepath)
     {
         $this->_client->setHeaders('Content-Type', 'application/octet-stream');
         $this->_client->setHeaders('Accept-encoding', 'identity');
-        $this->_client->setRawData(file_get_contents($file->getFilePath()));
+        $this->_client->setRawData(file_get_contents($filepath));
 
         $response = $this->_client->request(Zend_Http_Client::PUT);
 
-        $result = $this->getResultObject();
-        $result->setSuccess($response->getStatus() == 201 ? true : false);
-        $result['status'] = $response->getStatus();
-        $result['uri'] = $this->getClient()->getUri();
+        if ($response->getStatus() != 201) {
+            throw new Ext_File_Transfer_Adapter_Exception("Status code was {$response->getStatus()}");
+        }
         
-        return $result;
+        return $this->getClient()->getUri();
+    }
+
+    public function download()
+    {
+        $response = $this->getClient()->request();
+        $file_name = tempnam(sys_get_temp_dir(), md5(mt_rand()));
+        $result = file_put_contents($file_name, $response->getBody());
+        if (!$result) {
+            throw new Ext_File_Transfer_Adapter_Exception('todo');
+        }
+
+        return $file_name;
     }
 
     public function setUri($uri)

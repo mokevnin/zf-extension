@@ -37,10 +37,11 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
         $adapter->setDestination($this->_newFilePath);
         $value = $element->getValue('formname');
         
-        $this->assertEquals($this->_newFilePath, (string) $value);
+        $this->assertTrue($value->isTransfered());
+        $this->assertTrue(is_readable($this->_newFilePath));
 
         //test filters
-        $this->assertEquals(strtoupper($this->_newFilePath), file_get_contents($value));
+        $this->assertEquals(strtoupper($this->_newFilePath), file_get_contents($this->_newFilePath));
     }
 
     public function testUploadError()
