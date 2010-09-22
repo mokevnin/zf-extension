@@ -1,6 +1,6 @@
 <?php
 
-class Ext_File
+class Ext_File extends ArrayObject
 {
     protected $_params = array();
     protected $_filePath;
@@ -9,10 +9,10 @@ class Ext_File
     protected $_validators = array();
     protected $_break = array();
     protected $_validated = false;
-    
+
     protected $_filters = array();
     protected $_filtered = false;
-    
+
     protected $_transfered = false;
     protected $_ignoreNoFile = false;
 
@@ -62,7 +62,15 @@ class Ext_File
         return $this->_params;
     }
 
-    public function __get($name)
+    public function offsetExists($name)
+    {
+        return isset($this->_params[$name]);
+    }
+
+    /**
+     * @see Zend_Validate_File_Upload
+     */
+    public function offsetGet($name)
     {
         if (!isset($this->_params[$name])) {
             throw new Ext_File_Exception("Param '$name' does not exist");
@@ -130,7 +138,7 @@ class Ext_File
         if (sizeof($this->_messages) > 0) {
             return false;
         }
-        
+
         $this->_validated = true;
 
         return true;
@@ -158,7 +166,7 @@ class Ext_File
         if ($this->_filtered) {
             return true;
         }
-        
+
         foreach ($this->_filters as $filter) {
             $filter->filter($this->getFilePath());
         }

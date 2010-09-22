@@ -7,18 +7,19 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
      * @var Ext_File_Transfer
      */
     private static $_transfer;
-    
+
     protected static $_test = false;
 
     public static function initializeStub()
     {
         self::$_test = true;
     }
-    
+
     public function getValue()
     {
         if (self::$_test) {
             $file = new Ext_File();
+            $file->setTransfered(true);
             $file->setResult(Test_Object::getInstance()->addFile());
             return $file;
         }
@@ -27,7 +28,9 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
             return null;
         }
 
-        //TODO if name="files[]"?
+        if($this->isArray()) {
+            return $this->getTransfer()->transfer($this->getName());
+        }
         return current($this->getTransfer()->transfer($this->getName()));
     }
 
@@ -45,8 +48,10 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
         }
 
         if (!$this->isRequired()) {
-            $file = $this->getTransfer()->getFile($this->getName());
-            $file->setIgnoreNoFile();
+            $files = $this->getTransfer()->getFiles($this->getName());
+            foreach($files as $file) {
+                $file->setIgnoreNoFile();
+            }
         }
         if ($this->getTransfer()->isValid($this->getName())) {
             $this->_validated = true;
@@ -87,7 +92,9 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
 
     public static function setTransfer(Ext_File_Transfer $transfer)
     {
-        $transfer->addValidator(new Zend_Validate_File_Upload(), false);
+        $validator = new Zend_Validate_File_Upload();
+        $validator->setFiles($transfer->getFiles());
+        $transfer->addValidator($validator, false);
         self::$_transfer = $transfer;
     }
 

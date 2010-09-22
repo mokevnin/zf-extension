@@ -89,7 +89,7 @@ class Ext_File_Transfer
         $check = sizeof($files) ? $files : array_keys($this->_files);
         foreach ($check as $file) {
             if ($file instanceof $this->_fileClass) {
-                $file = $file->getFormName();
+                $file = $file->getFilePath();
             }
             if ($file && !array_key_exists($file, $this->_files)) {
                 $this->_files[$file] = new $this->_fileClass($file);
