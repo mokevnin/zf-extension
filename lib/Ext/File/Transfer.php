@@ -7,14 +7,18 @@ class Ext_File_Transfer
      * @var Ext_File_Transfer_Adapter_Interface
      */
     protected $_adapter;
-    
+
     protected $_files = array();
     protected $_fileClass = 'Ext_File';
 
-    public function __construct(Ext_File_Transfer_Adapter_Interface $adapter)
+    public function __construct()
+    {
+        $this->_prepareFiles();
+    }
+
+    public function setAdapter(Ext_File_Transfer_Adapter_Interface $adapter)
     {
         $this->_adapter = $adapter;
-        $this->_prepareFiles();
     }
 
     public function isValid($files = null)
@@ -70,7 +74,7 @@ class Ext_File_Transfer
         foreach ($selected as $file_key => $file) {
             $file->filter();
             if ($file->isValid() && !$file->isTransfered() && $file->exists()) {
-                $file->setResult($this->getAdapter()->upload($file->getFilePath()));
+                $file->setResult($this->getAdapter()->configuredUpload($file->getFilePath()));
                 $file->setTransfered(true);
             }
             $results[$file_key] = $file;
@@ -89,7 +93,7 @@ class Ext_File_Transfer
         $check = sizeof($files) ? $files : array_keys($this->_files);
         foreach ($check as $file) {
             if ($file instanceof $this->_fileClass) {
-                $file = $file->getFilePath();
+                $file = $file->getFormName();
             }
             if ($file && !array_key_exists($file, $this->_files)) {
                 $this->_files[$file] = new $this->_fileClass($file);

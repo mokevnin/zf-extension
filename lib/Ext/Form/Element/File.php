@@ -8,22 +8,8 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
      */
     private static $_transfer;
 
-    protected static $_test = false;
-
-    public static function initializeStub()
-    {
-        self::$_test = true;
-    }
-
     public function getValue()
     {
-        if (self::$_test) {
-            $file = new Ext_File();
-            $file->setTransfered(true);
-            $file->setResult(Test_Object::getInstance()->addFile());
-            return $file;
-        }
-
         if (!$this->isValid(null)) {
             return null;
         }
@@ -31,6 +17,7 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
         if($this->isArray()) {
             return $this->getTransfer()->transfer($this->getName());
         }
+        
         return current($this->getTransfer()->transfer($this->getName()));
     }
 
@@ -53,6 +40,7 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
                 $file->setIgnoreNoFile();
             }
         }
+        
         if ($this->getTransfer()->isValid($this->getName())) {
             $this->_validated = true;
             return true;

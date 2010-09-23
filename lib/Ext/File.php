@@ -68,7 +68,7 @@ class Ext_File extends ArrayObject
     }
 
     /**
-     * @see Zend_Validate_File_Upload
+     * @see Zend_Validate_File_Upload (isValid)
      */
     public function offsetGet($name)
     {
