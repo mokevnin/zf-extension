@@ -58,6 +58,14 @@ class Ext_File_Transfer
         }
     }
 
+    public function removeFilter($className, $files = array())
+    {
+        $selected = $this->getFiles($files);
+        foreach ($selected as $file) {
+            $file->removeFilter($className);
+        }
+    }
+
     /**
      *
      * @return Ext_File_Transfer_Adapter_Interface
@@ -67,6 +75,11 @@ class Ext_File_Transfer
         return $this->_adapter;
     }
 
+    /**
+     *
+     * @param array $files
+     * @return array
+     */
     public function transfer($files = null)
     {
         $selected = $this->getFiles($files);
@@ -83,6 +96,11 @@ class Ext_File_Transfer
         return $results;
     }
 
+    /**
+     *
+     * @param mixed $files
+     * @return array
+     */
     public function getFiles($files = null)
     {
         if (is_string($files)) {

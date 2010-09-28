@@ -14,7 +14,6 @@ class Ext_File extends ArrayObject
     protected $_filtered = false;
 
     protected $_transfered = false;
-    protected $_ignoreNoFile = false;
 
     protected $_result;
 
@@ -79,6 +78,12 @@ class Ext_File extends ArrayObject
         return $this->_params[$name];
     }
 
+    /**
+     *
+     * @param Zend_Validate_Interface $validator
+     * @param boolean $breakChainOnFailure
+     * @return Ext_File
+     */
     public function addValidator(Zend_Validate_Interface $validator, $breakChainOnFailure = false)
     {
         $class = get_class($validator);
@@ -89,22 +94,24 @@ class Ext_File extends ArrayObject
         return $this;
     }
 
+    /**
+     *
+     * @param string $className
+     * @return Ext_File
+     */
     public function removeValidator($className)
     {
         if (!isset($this->_validators[$className])) {
-            throw new Ext_File_Transfer_Exception("removeValidator //todo");
+            throw new Ext_File_Transfer_Exception("Validator '$className' was not added");
         }
         unset($this->_validators[$className]);
         return $this;
     }
 
     /**
-     * Adds a new filter for this class
      *
-     * @param  string|array $filter Type of filter to add
-     * @param  string|array $options   Options to set for the filter
-     * @param  string|array $files     Files to limit this filter to
-     * @return Ext_File
+     * @param Zend_Filter_Interface $filter
+     * @return Ext_File 
      */
     public function addFilter(Zend_Filter_Interface $filter)
     {
@@ -114,6 +121,25 @@ class Ext_File extends ArrayObject
         return $this;
     }
 
+    /**
+     *
+     * @param string $className
+     * @return Ext_File
+     */
+    public function removeFilter($className)
+    {
+        if (!isset($this->_filters[$className])) {
+            throw new Ext_File_Transfer_Exception("Filter '$className' was not added");
+        }
+        unset($this->_filters[$className]);
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return boolean
+     */
     public function isValid()
     {
         if ($this->_validated) {
@@ -123,12 +149,6 @@ class Ext_File extends ArrayObject
         foreach ($this->_validators as $class => $validator) {
             if (!$validator->isValid($this->getFilePath())) {
                 $this->_messages += $validator->getMessages();
-            }
-
-            //TODO move into validator
-            if ($this->ignoreNoFile() and (isset($this->_messages['fileUploadErrorNoFile']))) {
-                unset($this->_messages['fileUploadErrorNoFile']);
-                break;
             }
 
             if (($this->_break[$class]) and (sizeof($this->_messages) > 0)) {
@@ -144,26 +164,22 @@ class Ext_File extends ArrayObject
         return true;
     }
 
+    /**
+     *
+     * @return boolean
+     */
     public function exists()
     {
         return is_readable($this->getFilePath());
     }
 
-    public function setIgnoreNoFile($ignoreNoFile = true)
-    {
-        $this->_ignoreNoFile = (bool) $ignoreNoFile;
-
-        return $this;
-    }
-
-    public function ignoreNoFile()
-    {
-        return $this->_ignoreNoFile;
-    }
-
+    /**
+     *
+     * @return Ext_File 
+     */
     public function filter()
     {
-        if ($this->_filtered) {
+        if ($this->isFiltered()) {
             return true;
         }
 
@@ -171,6 +187,17 @@ class Ext_File extends ArrayObject
             $filter->filter($this->getFilePath());
         }
         $this->_filtered = true;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return boolean
+     */
+    public function isFiltered()
+    {
+        return $this->_filtered;
     }
 
     /**

@@ -7,9 +7,14 @@ abstract class Ext_File_Transfer_Adapter_Configurator_Abstract implements Ext_Fi
      */
     private $_adapter;
 
+    /**
+     * @param Ext_File_Transfer_Adapter_Interface $adapter
+     * @return Ext_File_Transfer_Adapter_Configurator_Abstract 
+     */
     public function setAdapter(Ext_File_Transfer_Adapter_Interface $adapter)
     {
         $this->_adapter = $adapter;
+        return $this;
     }
 
     /**
