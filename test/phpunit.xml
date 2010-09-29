@@ -1,12 +1,13 @@
+
 <phpunit backupGlobals="false"
          backupStaticAttributes="true"
          bootstrap="bootstrap.php"
-         colors="false"
+         colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="true"
-         stopOnFailure="true"
-         syntaxCheck="false"
+         stopOnFailure="false"
+         syntaxCheck="true"
          testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader">
 </phpunit>

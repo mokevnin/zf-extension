@@ -25,7 +25,7 @@ class Ext_View_Helper_IsActive extends Zend_View_Helper_Abstract
             $current_place = $module;
             if (2 == substr_count($place, ':')) {
                 $current_place .= ':' . $controller . ':' . $action;
-            } else if (1 == substr_count($resource, ':')) {
+            } else if (1 == substr_count($place, ':')) {
                 $current_place .= ':' . $controller;
             }
 
