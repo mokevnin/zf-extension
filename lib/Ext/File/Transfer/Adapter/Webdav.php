@@ -2,6 +2,9 @@
 
 class Ext_File_Transfer_Adapter_Webdav extends Ext_File_Transfer_Adapter_Abstract
 {
+    /**
+     * @var Ext_Webdav_Client
+     */
     protected $_client;
 
     public function upload($filepath)
@@ -19,11 +22,20 @@ class Ext_File_Transfer_Adapter_Webdav extends Ext_File_Transfer_Adapter_Abstrac
         return $this->getClient()->getUri();
     }
 
+    /**
+     *
+     * @param Ext_Webdav_Client $client
+     * @return Ext_File_Transfer_Adapter_Webdav 
+     */
     public function setClient(Ext_Webdav_Client $client)
     {
         $this->_client = $client;
+        return $this;
     }
 
+    /**
+     * @return Ext_Webdav_Client
+     */
     public function getClient()
     {
         return $this->_client;

@@ -3,18 +3,20 @@
 class Ext_Form_Element_File extends Zend_Form_Element_File
 {
     /**
-     *
      * @var Ext_File_Transfer
      */
     private static $_transfer;
 
+    /**
+     * @return mixed
+     */
     public function getValue()
     {
         if (!$this->isValid(null)) {
             return null;
         }
 
-        if($this->isArray()) {
+        if ($this->isArray()) {
             return $this->getTransfer()->transfer($this->getName());
         }
         
@@ -28,17 +30,17 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
         return $this;
     }
 
+    public function addValidator($validator, $breakChainOnFailure = false, $options = array())
+    {
+        $this->getTransfer()->addValidator($validator, $breakChainOnFailure, $this->getName());
+
+        return $this;
+    }
+
     public function isValid($value, $context = null)
     {
         if ($this->_validated) {
             return true;
-        }
-
-        if (!$this->isRequired()) {
-            $files = $this->getTransfer()->getFiles($this->getName());
-            foreach($files as $file) {
-                $file->setIgnoreNoFile();
-            }
         }
         
         if ($this->getTransfer()->isValid($this->getName())) {
@@ -78,21 +80,33 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
         return parent::getMessages() + $file->getMessages();
     }
 
+    /**
+     *
+     * @param Ext_File_Transfer $transfer 
+     */
     public static function setTransfer(Ext_File_Transfer $transfer)
     {
-        $validator = new Zend_Validate_File_Upload();
-        $validator->setFiles($transfer->getFiles());
+        $validator = new Ext_Validate_File_Post($transfer->getFiles());
         $transfer->addValidator($validator, false);
         self::$_transfer = $transfer;
     }
 
+    public function setRequired($flag = true)
+    {
+        if ($flag) {
+            $validator = new Ext_Validate_File_Upload($this->getTransfer()->getFiles());
+            $this->getTransfer()->addValidator($validator, false, $this->getName());
+        }
+
+        return parent::setRequired($flag);
+    }
+
+    /**
+     *
+     * @return Ext_File_Transfer
+     */
     public function getTransfer()
     {
         return self::$_transfer;
-    }
-
-    public function getAdapter()
-    {
-        return $this->getTransfer()->getAdapter();
     }
 }

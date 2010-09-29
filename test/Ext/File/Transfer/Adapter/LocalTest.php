@@ -23,9 +23,9 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
                 'error' => 0,
             ),
             'files' => array(
-                'tmp_name' => array($tmpfname, $tmpfname2, ''),
-                'name' => array(1, 2, ''),
-                'error' => array(0, 0, 3)
+                'tmp_name' => array($tmpfname, $tmpfname2),
+                'name' => array(1, 2),
+                'error' => array(0, 0)
             ),
         );
 
@@ -46,11 +46,9 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
 
     public function testSingleUpload()
     {
-        $this->_transfer->getFile('file1')->removeValidator('Zend_Validate_File_Upload');
         $element = new Ext_Form_Element_File('file1');
         $element->addFilter(new Zend_Filter_File_UpperCase());
 
-        $adapter = $element->getAdapter();
         $value = $element->getValue('file1');
         $this->assertTrue($value->isTransfered());
         $this->assertTrue(is_readable($this->_adapter->getFullFilePath()));
@@ -59,15 +57,11 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
 
     public function testMultiUpload()
     {
-        $this->_transfer->removeValidator('Zend_Validate_File_Upload');
         $element = new Ext_Form_Element_File('files');
         $element->setIsArray(true);
 
-        $adapter = $element->getAdapter();
         $value = $element->getValue('files');
-        $last = array_pop($value);
-        $this->assertFalse($last->isTransfered());
-        
+
         foreach ($value as $file) {
             $this->assertTrue($file->isTransfered());
             $this->assertTrue(is_readable($this->_adapter->getFullFilePath()));
@@ -76,8 +70,9 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
 
     public function testUploadError()
     {
-        $element = new Ext_Form_Element_File('file1');
-        $this->assertNull($element->getValue('file1'));
+        $element = new Ext_Form_Element_File('files');
+        $element->setRequired(true);
+        $this->assertNull($element->getValue('files'));
 
         $this->assertEquals('fileUploadErrorAttack', current($element->getErrors()));
         $this->assertEquals('fileUploadErrorAttack', current(array_keys($element->getMessages())));
