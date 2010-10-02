@@ -211,7 +211,7 @@ class Ext_Db_Table_Select extends Zend_Db_Table_Select
         return $this->where($expression);
     }
 
-    public function openAnd()
+    public function block()
     {
         array_push($this->_whereStack, 'AND ');
         array_push($this->_whereStack, '(');
@@ -219,7 +219,7 @@ class Ext_Db_Table_Select extends Zend_Db_Table_Select
         return $this;
     }
 
-    public function openOr()
+    public function orBlock()
     {
         array_push($this->_whereStack, 'OR ');
         array_push($this->_whereStack, '(');
@@ -227,7 +227,7 @@ class Ext_Db_Table_Select extends Zend_Db_Table_Select
         return $this;
     }
 
-    public function closeBlock()
+    public function endBlock()
     {
         array_push($this->_whereStack, ')');
 
