@@ -2,6 +2,8 @@
 
 class Ext_Db_Table_Select extends Zend_Db_Table_Select
 {
+    protected $_whereStack = array();
+    
     /**
      *
      * @return Db_Table_Row
@@ -209,4 +211,86 @@ class Ext_Db_Table_Select extends Zend_Db_Table_Select
         return $this->where($expression);
     }
 
+    public function openAnd()
+    {
+        array_push($this->_whereStack, 'AND ');
+        array_push($this->_whereStack, '(');
+
+        return $this;
+    }
+
+    public function openOr()
+    {
+        array_push($this->_whereStack, 'OR ');
+        array_push($this->_whereStack, '(');
+
+        return $this;
+    }
+
+    public function closeBlock()
+    {
+        array_push($this->_whereStack, ')');
+
+        return $this;
+    }
+
+    protected function _registerCond($index)
+    {
+        return array_push($this->_whereStack, $index);
+    }
+
+    protected function _renderWhere($sql)
+    {
+        if ($this->_parts[self::FROM] && $this->_parts[self::WHERE]) {
+            $parts = array();
+            foreach ($this->_whereStack as $item) {
+                if (!is_int($item)) {
+                    $parts[] = $item;
+                } else {
+                    $parts[] = ' ' . $this->_parts[self::WHERE][$item] . ' ';
+                }
+            }
+            $sql .= ' ' . self::SQL_WHERE . ' ' .  implode('', $parts);
+        }
+
+        return $sql;
+    }
+
+    public function where($cond, $value = null, $type = null)
+    {
+        $this->_parts[self::WHERE][] = $this->_where($cond, $value, $type, true);
+        $this->_registerCond(sizeof($this->_parts[self::WHERE]) - 1);
+
+        return $this;
+    }
+
+    public function orWhere($cond, $value = null, $type = null)
+    {
+        $this->_parts[self::WHERE][] = $this->_where($cond, $value, $type, false);
+        $this->_registerCond(sizeof($this->_parts[self::WHERE]) - 1);
+
+        return $this;
+    }
+
+    protected function _where($condition, $value = null, $type = null, $bool = true)
+    {
+        if (count($this->_parts[self::UNION])) {
+            require_once 'Zend/Db/Select/Exception.php';
+            throw new Zend_Db_Select_Exception("Invalid use of where clause with " . self::SQL_UNION);
+        }
+
+        if ($value !== null) {
+            $condition = $this->_adapter->quoteInto($condition, $value, $type);
+        }
+
+        if ($this->_parts[self::WHERE] and is_int($this->_whereStack[sizeof($this->_whereStack) - 1])) {
+            if ($bool === true) {
+                $this->_registerCond('AND');
+            } else {
+                $this->_registerCond('OR');
+            }
+        }
+
+        return "($condition)";
+    }
 }
