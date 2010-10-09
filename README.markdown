@@ -58,3 +58,16 @@ controller
      * @inject cachemanager
     /*
     public $cachemanager
+
+#### Ext_File
+
+    // local transfer
+
+    // application.ini
+    // configurator class must be extends Ext_File_Transfer_Adapter_Configurator_Abstract
+    resource.transfer.adapter.params.configurator = 'You_Configurator_Class'
+    resource.transfer.adapter.params.destination = 'path/to/move/uploaded/files' // if local adapter
+
+    // form proccessing
+    $file = $form->getValue('file_element_name');
+    $result = $file->getResult(); // path for local configurator.
