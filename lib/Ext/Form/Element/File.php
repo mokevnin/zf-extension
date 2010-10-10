@@ -109,4 +109,9 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
     {
         return self::$_transfer;
     }
+
+    public function setConfigurator(Ext_File_Configurator_Abstract $configurator)
+    {
+        $this->getTransfer()->setConfigurator($configurator, $this->getName());
+    }
 }

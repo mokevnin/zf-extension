@@ -19,7 +19,6 @@ class Ext_Application_Resource_TransferTest extends PHPUnit_Framework_TestCase
         $options = array(
             'adapter' => array(
                 'params' => array(
-                    'configurator' => 'Ext_File_Transfer_Adapter_Configurator_Local',
                     'wrong_key' => 'value',
                     'destination' => 'test/destination'
                 )

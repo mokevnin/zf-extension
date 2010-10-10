@@ -21,10 +21,10 @@ class Ext_Db_Table_SelectTest extends PHPUnit_Framework_TestCase
     public function testWhere()
     {
         $this->_select->where('outer_cond')
-            ->openAnd()
+            ->block()
             ->where('first_inner_cond')
             ->OrWhere('second_inner_cond')
-            ->closeBlock();
+            ->endBlock();
         $expected = 'SELECT "mock".* FROM "mock" WHERE  (outer_cond) AND ( (first_inner_cond) OR (second_inner_cond) )';
         $this->assertEquals($expected, $this->_select->__toString());
     }

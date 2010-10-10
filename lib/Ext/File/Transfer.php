@@ -4,23 +4,42 @@ class Ext_File_Transfer
 {
     /**
      *
-     * @var Ext_File_Transfer_Adapter_Interface
+     * @var Ext_File_Adapter_Interface
      */
     protected $_adapter;
 
+    /**
+     * @var array
+     */
     protected $_files = array();
+
     protected $_fileClass = 'Ext_File';
 
-    public function __construct()
+    /**
+     *
+     * @param array $options
+     */
+    public function __construct(array $options = array())
     {
         $this->_prepareFiles();
     }
 
-    public function setAdapter(Ext_File_Transfer_Adapter_Interface $adapter)
+    /**
+     *
+     * @param Ext_File_Adapter_Interface $adapter
+     * @return Ext_File_Transfer
+     */
+    public function setAdapter(Ext_File_Adapter_Interface $adapter)
     {
         $this->_adapter = $adapter;
+        return $this;
     }
 
+    /**
+     *
+     * @param mixed $files
+     * @return boolean
+     */
     public function isValid($files = null)
     {
         $selected = $this->getFiles($files);
@@ -32,43 +51,85 @@ class Ext_File_Transfer
         return true;
     }
 
+    /**
+     *
+     * @param Zend_Validate_Interface $validator
+     * @param boolean $breakChainOnFailure
+     * @param mixed $files
+     * @return Ext_File_Transfer
+     */
     public function addValidator(Zend_Validate_Interface $validator, $breakChainOnFailure = false, $files = array())
     {
         $selected = $this->getFiles($files);
         foreach ($selected as $file) {
             $file->addValidator($validator, $breakChainOnFailure);
         }
+        return $this;
     }
 
+    /**
+     *
+     * @param string $className
+     * @param mixed $files
+     * @return Ext_File_Transfer
+     */
     public function removeValidator($className, $files = array())
     {
         $selected = $this->getFiles($files);
         foreach ($selected as $file) {
             $file->removeValidator($className);
         }
-
         return $this;
     }
 
+    /**
+     *
+     * @param Zend_Filter_Interface $filter
+     * @param mixed $files
+     * @return Ext_File_Transfer
+     */
     public function addFilter(Zend_Filter_Interface $filter, $files = array())
     {
         $selected = $this->getFiles($files);
         foreach ($selected as $file) {
             $file->addFilter($filter);
         }
+        return $this;
     }
 
+    /**
+     *
+     * @param Ext_File_Configurator_Abstract $configurator
+     * @param mixed $files
+     * @return Ext_File_Transfer
+     */
+    public function setConfigurator(Ext_File_Configurator_Abstract $configurator, $files = array())
+    {
+        $selected = $this->getFiles($files);
+        foreach ($selected as $file) {
+            $file->setConfigurator($configurator);
+        }
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $className
+     * @param mixed $files
+     * @return Ext_File_Transfer
+     */
     public function removeFilter($className, $files = array())
     {
         $selected = $this->getFiles($files);
         foreach ($selected as $file) {
             $file->removeFilter($className);
         }
+        return $this;
     }
 
     /**
      *
-     * @return Ext_File_Transfer_Adapter_Interface
+     * @return Ext_File_Adapter_Interface
      */
     public function getAdapter()
     {
@@ -77,7 +138,7 @@ class Ext_File_Transfer
 
     /**
      *
-     * @param array $files
+     * @param mixed $files
      * @return array
      */
     public function transfer($files = null)
@@ -86,11 +147,14 @@ class Ext_File_Transfer
         $results = array();
         foreach ($selected as $file_key => $file) {
             $file->filter();
+            $file->getConfigurator()
+                ->setAdapter($this->getAdapter())
+                ->configure($file);
             if ($file->isValid() && !$file->isTransfered() && $file->exists()) {
-                $file->setResult($this->getAdapter()->configuredUpload($file->getFilePath()));
+                $result = $this->getAdapter()->upload($file->getFilePath());
                 $file->setTransfered(true);
             }
-            $results[$file_key] = $file;
+            $results[$file_key] = $result;
         }
 
         return $results;
@@ -138,12 +202,6 @@ class Ext_File_Transfer
     public function getFile($file)
     {
         return current($this->getFiles($file));
-    }
-
-    public function addFile($fileKey, Ext_File $file)
-    {
-        $this->_files[$fileKey] = $file;
-        return $this;
     }
 
     protected function _prepareFiles()

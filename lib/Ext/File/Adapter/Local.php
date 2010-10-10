@@ -1,6 +1,6 @@
 <?php
 
-class Ext_File_Transfer_Adapter_Local extends Ext_File_Transfer_Adapter_Abstract
+class Ext_File_Adapter_Local extends Ext_File_Adapter_Abstract
 {
     private $_destination;
     private $_filePath;
@@ -8,7 +8,7 @@ class Ext_File_Transfer_Adapter_Local extends Ext_File_Transfer_Adapter_Abstract
     public function upload($srcFilePath)
     {
         if (!rename($srcFilePath, $this->getFullFilePath())) {
-            throw new Ext_File_Transfer_Adapter_Exception("Can't move file to '{$this->getFullFilePath()}'");
+            throw new Ext_File_Adapter_Exception("Can't move file to '{$this->getFullFilePath()}'");
         }
 
         return $this->getFilePath();

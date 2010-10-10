@@ -13,6 +13,8 @@ class Ext_File extends ArrayObject
     protected $_filters = array();
     protected $_filtered = false;
 
+    protected $_configurator;
+
     protected $_transfered = false;
 
     protected $_result;
@@ -23,20 +25,9 @@ class Ext_File extends ArrayObject
         $this->setParams($params);
     }
 
-    public function setResult($result)
-    {
-        $this->_result = $result;
-        return $this;
-    }
-
-    public function getResult()
-    {
-        return $this->_result;
-    }
-
     public function setTransfered($result)
     {
-        $this->_transfered = (bool) $result;
+        $this->_transfered = (boolean) $result;
     }
 
     public function isTransfered()
@@ -228,5 +219,22 @@ class Ext_File extends ArrayObject
     public function hasErrors()
     {
         return (!empty($this->_messages));
+    }
+
+    /**
+     * @param Ext_File_Configurator $configurator
+     */
+    public function setConfigurator(Ext_File_Configurator_Abstract $configurator)
+    {
+        $this->_configurator = $configurator;
+    }
+
+    /**
+     *
+     * @return Ext_File_Configurator
+     */
+    public function getConfigurator()
+    {
+        return $this->_configurator;
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
-class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
+class Ext_File_Adapter_LocalTest extends PHPUnit_Framework_TestCase
 {
     protected $_adapter;
     protected $_transfer;
     protected $_text = 'example';
+    protected $_destination;
 
     public function setUp()
     {
@@ -29,18 +30,16 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $this->_adapter = new Ext_File_Transfer_Adapter_Local();
-        $configurator = new Ext_File_Transfer_Adapter_Configurator_Local();
-        $this->_adapter->setConfigurator($configurator);
+        $this->_adapter = new Ext_File_Adapter_Local();
         $this->_transfer = new Ext_File_Transfer();
         $this->_transfer->setAdapter($this->_adapter);
         
         Ext_Form_Element_File::setTransfer($this->_transfer);
 
         // >> set destination for all files
-        $destination = sys_get_temp_dir() . '/example';
-        @mkdir($destination, 0777);
-        $this->_adapter->setDestination($destination);
+        $this->_destination = sys_get_temp_dir() . '/example';
+        @mkdir($this->_destination, 0777);
+        $this->_adapter->setDestination($this->_destination);
         // <<
     }
 
@@ -49,10 +48,15 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
         $element = new Ext_Form_Element_File('file1');
         $element->addFilter(new Zend_Filter_File_UpperCase());
 
+        $element->setConfigurator(new Ext_File_Configurator_HttpPost());
         $value = $element->getValue('file1');
-        $this->assertTrue($value->isTransfered());
-        $this->assertTrue(is_readable($this->_adapter->getFullFilePath()));
-        $this->assertEquals(strtoupper($this->_text), file_get_contents($this->_adapter->getFullFilePath()));
+        $file_path = $this->_destination . '/' . $value;
+        $this->assertTrue(is_readable($file_path));
+        $this->assertEquals(strtoupper($this->_text), file_get_contents($file_path));
+        $this->assertEquals($value, $_FILES['file1']['name']);
+        
+        $file = $this->_transfer->getFile('file1');
+        $this->assertTrue($file->isTransfered());
     }
 
     public function testMultiUpload()
@@ -60,11 +64,11 @@ class Ext_File_Transfer_Adapter_LocalTest extends PHPUnit_Framework_TestCase
         $element = new Ext_Form_Element_File('files');
         $element->setIsArray(true);
 
-        $value = $element->getValue('files');
-
+        $element->setConfigurator(new Ext_File_Configurator_HttpPost());
+        $value = $element->getValue();
         foreach ($value as $file) {
-            $this->assertTrue($file->isTransfered());
-            $this->assertTrue(is_readable($this->_adapter->getFullFilePath()));
+            $file_path = $this->_destination . '/' . $file;
+            $this->assertTrue(is_readable($file_path));
         }
     }
 

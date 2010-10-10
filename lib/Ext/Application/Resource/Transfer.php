@@ -30,7 +30,7 @@ class Ext_Application_Resource_Transfer
         $options = $this->getOptions();
 
         // adapter
-        $adapter_class = 'Ext_File_Transfer_Adapter_Local';
+        $adapter_class = 'Ext_File_Adapter_Local';
         $params = array();
         if (!empty($options['adapter']['name'])) {
             $adapter_class = $options['adapter']['name'];
