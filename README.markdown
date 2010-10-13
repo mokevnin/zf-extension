@@ -65,7 +65,7 @@ controller
 
     // application.ini
     // configurator class must be extends Ext_File_Adapter_Configurator_Abstract
-    resource.transfer.adapter.params.destination = 'path/to/move/uploaded/files' // if local adapter
+    resources.transfer.adapter.params.destination = 'path/to/move/uploaded/files' // if local adapter
 
     // form proccessing
     $form->getElement('file')->setConfigurator(new Ext_File_Configurator_HttpPost); // you need use custom configurator
