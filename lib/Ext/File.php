@@ -235,6 +235,9 @@ class Ext_File extends ArrayObject
      */
     public function getConfigurator()
     {
+        if (!$this->_configurator) {
+            $this->_configurator = new Ext_File_Configurator_HttpPost();
+        }
         return $this->_configurator;
     }
 }

@@ -30,16 +30,13 @@ class Ext_File_Adapter_LocalTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $this->_adapter = new Ext_File_Adapter_Local();
         $this->_transfer = new Ext_File_Transfer();
-        $this->_transfer->setAdapter($this->_adapter);
-        
         Ext_Form_Element_File::setTransfer($this->_transfer);
 
         // >> set destination for all files
         $this->_destination = sys_get_temp_dir() . '/example';
         @mkdir($this->_destination, 0777);
-        $this->_adapter->setDestination($this->_destination);
+        $this->_adapter = $this->_transfer->getAdapter()->setDestination($this->_destination);
         // <<
     }
 

@@ -107,6 +107,10 @@ class Ext_Form_Element_File extends Zend_Form_Element_File
      */
     public function getTransfer()
     {
+        if (!self::$_transfer) {
+            throw new Zend_Form_Element_Exception('Set up transfer to file element');
+        }
+
         return self::$_transfer;
     }
 

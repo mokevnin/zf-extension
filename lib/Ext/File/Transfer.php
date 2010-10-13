@@ -133,6 +133,10 @@ class Ext_File_Transfer
      */
     public function getAdapter()
     {
+        if (!$this->_adapter) {
+            $this->_adapter = new Ext_File_Adapter_Local();
+        }
+
         return $this->_adapter;
     }
 
