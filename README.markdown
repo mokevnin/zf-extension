@@ -1,3 +1,5 @@
+> **Archived.** Extensions for Zend Framework 1 (2010). Kept for history, not maintained.
+
 # Zend Framework extensions
 
 ### View helpers
